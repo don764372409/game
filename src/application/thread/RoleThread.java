@@ -15,7 +15,7 @@ public class RoleThread extends Thread{
 	@Override
 	public void run() {
 		//获取第二层画布
-		GraphicsContext gc = GameData.gc2;
+		GraphicsContext gc = GameData.rolesG2D;
 		while(true) {
 			try {
 				if (gc!=null) {

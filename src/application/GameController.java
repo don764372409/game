@@ -59,7 +59,7 @@ public class GameController implements Initializable{
 						mrt.setY(y);
 						mrt.start();
 						//清除选中框
-						GraphicsContext gc = GameData.gc3;
+						GraphicsContext gc = GameData.caozuoG2D;
 						gc.clearRect(mouseClickX, mouseClickY, currentX-mouseClickX+5,currentY-mouseClickY+5);
 					}
 				}
@@ -90,7 +90,7 @@ public class GameController implements Initializable{
 			flag = true;
 		}
 		//鼠标弹起时，之前画的线都清除
-		GraphicsContext gc = GameData.gc3;
+		GraphicsContext gc = GameData.caozuoG2D;
 		gc.clearRect(mouseClickX, mouseClickY, currentX-mouseClickX+5,currentY-mouseClickY+5);
 		//画完之后判断有没有圈住角色
 		for (Role role : GameData.roles) {
@@ -106,7 +106,6 @@ public class GameController implements Initializable{
 				GameData.selectedRoles.add(role);
 			}
 		}
-		
 	}
 	/**
 	 * 画矩形
@@ -115,7 +114,7 @@ public class GameController implements Initializable{
 	 * @param x 
 	 */
 	private void drawRect(AnchorPane acp_top2, double x, double y) {
-		GraphicsContext gc = GameData.gc3;
+		GraphicsContext gc = GameData.caozuoG2D;
 		gc.setStroke(Color.YELLOW); 
 		//如果当前鼠标位置小于鼠标上一次位置(也就是上一次记录的鼠标最终位置，鼠标在回拉),就将坐标交换清除
 		if (x<currentX||y<currentY) {

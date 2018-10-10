@@ -1,0 +1,13 @@
+/*
+1.山
+2.水
+3.草地
+4.沙漠地
+int x;//坐标
+int y;
+int type;//地形类型
+int width;//占地宽度
+int height;//占地高度
+String imgPath;//图片路径
+*/
+{x=,y=,type=,width=,height=,imgPath}

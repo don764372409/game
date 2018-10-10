@@ -1,5 +1,6 @@
 package application;
 
+import java.awt.Toolkit;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -10,6 +11,8 @@ import javafx.stage.Stage;
  * 游戏数据类
  */
 public class GameData {
+	public static int width;
+	public static int height;
 	public static Stage loginStage = null;
 	public static Stage gameStage = null;
 	public static GraphicsContext dibiaoG2D;//第一层 画布
@@ -31,5 +34,10 @@ public class GameData {
 	//装被选中的角色
 	public static HashSet<Role> selectedRoles = new HashSet<>();
 	//第一层地形块
-	public static List<MapBlock> diaobiao = new ArrayList<>();
+	public static List<MapBlock> dibiao = new ArrayList<>();
+	
+	static {
+		width = (int) Toolkit.getDefaultToolkit().getScreenSize().getWidth();
+		height = (int) Toolkit.getDefaultToolkit().getScreenSize().getHeight();
+	}
 }

@@ -18,7 +18,7 @@ public class MapData{
 	private Random rd = new Random();
 	private Farmer farmer;
 	public void drawMap(AnchorPane acp) {
-		//µØ±í²ã»¬°å
+		//µØ±í²ã»­°å
 		Canvas canvas = new Canvas(1920,1080);
 		GraphicsContext gc = canvas.getGraphicsContext2D();
 		//½ÇÉ«²ã»­°å  ½ÇÉ« Ê÷  ½¨ÖþµÈ
