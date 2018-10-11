@@ -23,10 +23,8 @@ public class MapData{
 		GraphicsContext gc = canvas.getGraphicsContext2D();
 		//角色层画板  角色 树  建筑等
 		Canvas canvas2 = new Canvas(1920,1080);
-		GameData.gc2 = canvas2.getGraphicsContext2D();
 		//操作层画板  划线等
 		Canvas canvas3 = new Canvas(1920,1080);
-		GameData.gc3 = canvas3.getGraphicsContext2D();
 		farmer = new Farmer();
 		farmer.setWidth(60);
 		farmer.setHeight(60);

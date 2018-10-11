@@ -1,14 +1,22 @@
 package application;
 
-import java.io.File;
+import java.util.LinkedList;
 
+import application.comp.MyLabel;
+import application.util.FileUtil;
 import application.util.JAVAFXUtil;
+import javafx.event.Event;
+import javafx.event.EventHandler;
 import javafx.scene.Cursor;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.image.Image;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.FlowPane;
@@ -26,6 +34,77 @@ public class GameStage extends Stage{
 			root.setCursor(Cursor.cursor(path));
 			Scene scene = new Scene(root);
 			scene.getStylesheets().add(this.getClass().getResource("game.css").toExternalForm());
+			scene.setOnKeyPressed(new EventHandler<Event>() {
+				public void handle(Event event) {
+					//如果临时开启的,并且按了C或[       ] 
+					KeyEvent ke = (KeyEvent)event;
+					KeyCode code = ke.getCode();
+					if (GameData.empFlag) {
+						if (code.equals(KeyCode.OPEN_BRACKET)) {
+							GameData.empWidth*=0.9;
+							GameData.empHeight*=0.9;
+							System.err.println("缩小图片");
+						}
+						if (code.equals(KeyCode.CLOSE_BRACKET)) {
+							System.err.println("放大图片");
+							GameData.empWidth*=1.1;
+							GameData.empHeight*=1.1;
+						}
+						
+					}else {
+						if (code.equals(KeyCode.C)) {
+							//删除最后一个
+							if (GameData.empMbs.size()>0) {
+								GameData.empMbs.removeLast();
+								reDrawMap(GameData.caozuoG2D);
+							}
+							//将最新地图保存
+							FileUtil.writeMap(GameData.empMbs);
+							System.err.println("删除图片");
+						}
+					}
+					//按了上下左右
+					if (code.equals(KeyCode.W)) {
+						for (MapBlock mb : GameData.empMbs) {
+							double y = mb.getY();
+							y+=10;
+							mb.setY(y);	
+						}
+						reDrawMap(GameData.caozuoG2D);
+						FileUtil.writeMap(GameData.empMbs);
+					}
+					if (code.equals(KeyCode.S)) {
+						for (MapBlock mb : GameData.empMbs) {
+							double y = mb.getY();
+							
+							y-=10;
+							mb.setY(y);
+						}
+						reDrawMap(GameData.caozuoG2D);
+						FileUtil.writeMap(GameData.empMbs);
+					}
+					if (code.equals(KeyCode.A)) {
+						for (MapBlock mb : GameData.empMbs) {
+							double x = mb.getX();
+							x+=10;
+							mb.setX(x);
+						}
+						reDrawMap(GameData.caozuoG2D);
+						FileUtil.writeMap(GameData.empMbs);
+					}
+					if (code.equals(KeyCode.D)) {
+						for (MapBlock mb : GameData.empMbs) {
+							double x = mb.getX();
+							x-=10;
+							mb.setX(x);
+						}
+						reDrawMap(GameData.caozuoG2D);
+						FileUtil.writeMap(GameData.empMbs);
+					}
+				}
+			});
+			
+			
 			setResizable(true);
 			setScene(scene);
 			//设置无边框
@@ -93,22 +172,73 @@ public class GameStage extends Stage{
 		menuPane.setPrefWidth(200);
 		menuPane.setStyle("-fx-background-image:url("+getClass().getResource("/application/img/left/bg.png").toString()+");-fx-background-size:100% 100%;-fx-background-color: none;");
 		//创建容器
-		FlowPane menu_bottom_pane = new FlowPane();
-//		menu_bottom_pane.setPrefHeight(GameData.height*0.6);
+		ScrollPane  menu_bottom_pane = new ScrollPane();
+		//滚动条
+//		menu_bottom_pane.setVbarPolicy(ScrollBarPolicy.NEVER);
 		
+		menu_bottom_pane.setPrefHeight(GameData.height);
+		
+		FlowPane pane = new FlowPane();
 //		JAVAFXUtil.INSTANCE.setBackGroundColor(menu_bottom_pane, "red");
-		for (int i = 1; i < 146; i++) {
-			
-			Label label = new Label();
+		for (int i = 1; i < 626; i++) {
+			String path = getClass().getResource("/application/img/dixing/"+i+".png").toString();
+			Label label = new MyLabel(path);
 			label.setPrefHeight(100);
 			label.setPrefWidth(100);
-			
-			JAVAFXUtil.INSTANCE.setBackGroundImgAndSize(label,getClass().getResource("/application/img/dixing/dibiao"+i+".png").toString(),"100%","100%");
-			menu_bottom_pane.getChildren().add(label);
+			label.setOnMousePressed(new EventHandler<Event>() {
+				public void handle(Event event) {
+					//落笔时,获取图片信息
+					MyLabel label = (MyLabel)event.getSource();
+					GameData.empImg =  new Image(label.getPath());
+					GameData.empWidth = GameData.empImg.getWidth();
+					GameData.empHeight = GameData.empImg.getHeight();
+					//临时画开关打开
+					GameData.empFlag = true;
+				}
+			});
+			//鼠标经过图片
+			label.setOnMouseDragged(new EventHandler<Event>() {
+				public void handle(Event event) {
+					if (GameData.empFlag) {
+						MouseEvent me = (MouseEvent)event;
+						double x = me.getSceneX();
+						double y = me.getScreenY();
+						//获取地形画笔
+						GraphicsContext g2d = GameData.caozuoG2D;
+						//重绘地图
+						reDrawMap(g2d);
+						//画当前的
+						g2d.drawImage(GameData.empImg, x-GameData.empWidth/2, y-GameData.empHeight/2,GameData.empWidth,GameData.empHeight);
+						//保存起笔时的位置信息
+						GameData.empMb.setHeight(GameData.empHeight);
+						GameData.empMb.setImgPath(path);
+						GameData.empMb.setWidth(GameData.empWidth);
+						GameData.empMb.setX(x-GameData.empWidth/2);
+						GameData.empMb.setY(y-GameData.empHeight/2);
+					}
+				}
+			});
+			label.setOnMouseReleased(new EventHandler<Event>() {
+				public void handle(Event event) {
+					//转存一次  因为静态对象中的数据会被多次更改,就算装进数组也会
+					MapBlock mapBlock = new MapBlock();
+					mapBlock.setWidth(GameData.empMb.getWidth());
+					mapBlock.setHeight(GameData.empMb.getHeight());
+					mapBlock.setX(GameData.empMb.getX());
+					mapBlock.setY(GameData.empMb.getY());
+					mapBlock.setImgPath(GameData.empMb.getImgPath());
+					GameData.empMbs.add(mapBlock);
+					FileUtil.writeMap(GameData.empMbs);
+					//起笔时结束临时画
+					GameData.empFlag = false;
+				}
+			});
+			JAVAFXUtil.INSTANCE.setBackGroundImgAndSize(label,path,"100%","100%");
+			pane.getChildren().add(label);
 		}
 		
 		
-		
+		menu_bottom_pane.setContent(pane);
 		menuPane.setBottom(menu_bottom_pane);
 		root.setLeft(menuPane);
 	}
@@ -152,5 +282,14 @@ public class GameStage extends Stage{
 //		dibiaoG2D.drawImage(img2, 180, 0);
 //		img2 = new Image(getClass().getResource("/application/img/dixing/shanya23[1].png").toString());
 //		dibiaoG2D.drawImage(img2, 180, 0);
+	}
+	private void reDrawMap(GraphicsContext g2d) {
+		//清除地图
+		g2d.clearRect(0, 0, GameData.width, GameData.height);
+		//重绘地图
+		LinkedList<MapBlock> mbs = GameData.empMbs;
+		for (MapBlock mb : mbs) {
+			g2d.drawImage(new Image(mb.getImgPath()), mb.getX(), mb.getY(), mb.getWidth(), mb.getHeight());
+		}
 	}
 }

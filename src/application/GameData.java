@@ -3,9 +3,11 @@ package application;
 import java.awt.Toolkit;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 /**
  * 游戏数据类
@@ -40,4 +42,14 @@ public class GameData {
 		width = (int) Toolkit.getDefaultToolkit().getScreenSize().getWidth();
 		height = (int) Toolkit.getDefaultToolkit().getScreenSize().getHeight();
 	}
+	//临时画开关
+	public static boolean empFlag = false;
+	//拖拽时,临时画的图片路径
+	public static Image empImg;
+	//拖拽时,对应的临时地块对象
+	public static MapBlock empMb = new MapBlock();
+	//临时地图块集合
+	public static LinkedList<MapBlock> empMbs= new LinkedList<>();
+	public static double empWidth;//临时图片的宽
+	public static double empHeight;//临时图片的宽
 }
